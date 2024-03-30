@@ -1,6 +1,14 @@
+# Ignore environment files
 .env
+
+# Ignore macOS .DS_Store files
+.DS_Store
+
+# Ignore JSON files
 *.json
 *.jsonl
+
+# Ignore CSV files
 *.csv
 
 # Ignore Python bytecode files
