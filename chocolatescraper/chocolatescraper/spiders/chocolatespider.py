@@ -31,20 +31,5 @@ def get_products(response):
     return response.css('product-item.product-item')
 
 
-def get_name_css():
-    return 'a.product-item-meta__title::text'
-
-
-def get_price(product):
-    price = product.css('span.price').get().replace(
-        '<span class="price">\n              <span class="visually-hidden">Sale price</span>', '').replace('</span>', '').replace('<span class=\"price price--highlight\">\n              <span class=\"visually-hidden\">Sale price', '').replace('<span class=\"price\">\n                <span class=\"visually-hidden\">Sale price', '').replace('From ', '').replace('\n', '')
-
-    return price
-
-
-def get_url(product):
-    return product.css('div.product-item__image-wrapper a').attrib['href']
-
-
 def get_next_page(response):
     return response.css('nav.pagination__nav a.pagination__nav-item[rel=next]::attr("href")').get()
