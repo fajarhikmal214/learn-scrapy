@@ -16,8 +16,6 @@ class ChocolatespiderSpider(scrapy.Spider):
 
             chocolate.add_css('name', 'a.product-item-meta__title::text')
             chocolate.add_css('price', 'span.price')
-            # chocolate.add_css(
-            #     'price', 'span.price', re='<span class="price">\n              <span class="visually-hidden">Sale price</span>(.*)</span>')
             chocolate.add_css(
                 'url', 'div.product-item__image-wrapper a::attr(href)')
 
