@@ -12,6 +12,12 @@ BOT_NAME = "chocolatescraper"
 SPIDER_MODULES = ["chocolatescraper.spiders"]
 NEWSPIDER_MODULE = "chocolatescraper.spiders"
 
+FEEDS = {
+    '../../output/%(name)s/%(name)s_%(time)s_batch_%(batch_id)d.csv': {
+        'format': 'csv',
+        'batch_item_count': 100,
+    }
+}
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = "chocolatescraper (+http://www.yourdomain.com)"
@@ -67,6 +73,7 @@ ITEM_PIPELINES = {
     "chocolatescraper.pipelines.PriceToUSDPipeline": 100,
     "chocolatescraper.pipelines.DuplicatesPipeline": 200,
     "chocolatescraper.pipelines.SavingToMysqlPipeline": 300,
+    'chocolatescraper.pipelines.MinioPipeline': 400,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

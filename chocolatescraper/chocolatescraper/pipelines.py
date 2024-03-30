@@ -5,13 +5,20 @@
 
 
 # useful for handling different item types with a single interface
+import io
 import os
-from dotenv import load_dotenv
+import json
+import time
 
 from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
+
 from mysql import connector as mysqlConn
 
+from minio import Minio
+from minio.error import InvalidResponseError
+
+from dotenv import load_dotenv
 load_dotenv()
 
 
@@ -74,3 +81,52 @@ class SavingToMysqlPipeline:
         self.connection.commit()
 
         return item
+
+
+class MinioPipeline:
+    def __init__(self):
+        self.access_key = os.getenv('MINIO_ACCESS_KEY')
+        self.secret_key = os.getenv('MINIO_SECRET_KEY')
+        self.endpoint = os.getenv('MINIO_ENDPOINT')
+        self.bucket_name = os.getenv('MINIO_BUCKET_NAME')
+
+    def open_spider(self, spider):
+        self.client = Minio(
+            self.endpoint,
+            access_key=self.access_key,
+            secret_key=self.secret_key,
+            secure=False
+        )
+
+        self.json_data_dump = []
+
+    def process_item(self, item, spider):
+        # Add processed row to the list
+        self.json_data_dump.append(dict(item))
+
+        return item
+
+    def close_spider(self, spider):
+        # Convert JSON data to string
+        json_data = json.dumps(self.json_data_dump, indent=4)
+
+        # Convert string to bytes
+        data = json_data.encode('utf-8')
+
+        # Create BytesIO object
+        data_stream = io.BytesIO(data)
+
+        filename = "%(name)s_%(time)s.json" % {
+            "name": "chocolatescraper",
+            "time": time.strftime("%Y%m%d%H%M%S")
+        }
+
+        try:
+            self.client.put_object(
+                self.bucket_name,
+                object_name=filename,
+                data=data_stream,
+                length=len(data)
+            )
+        except InvalidResponseError as err:
+            spider.logger.error(f"Failed to upload item to MinIO: {err}")
