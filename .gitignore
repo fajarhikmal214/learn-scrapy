@@ -11,6 +11,11 @@
 # Ignore CSV files
 *.csv
 
+# Ignore Image Files
+*.png
+*.jpg
+*.jpeg
+
 # Ignore Python bytecode files
 *.pyc
 
